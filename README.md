@@ -1,5 +1,6 @@
 # Where is
 
+Tool to log user locations
 
 ## Set up
 ### Create virtual environment
@@ -16,3 +17,12 @@ source venv/bin/activate
 ```
 pip install -r requirement.txt
 ```
+
+### Run
+```
+python manage.py runserver
+```
+
+## TODO
+* Test
+* Validation

@@ -1,8 +1,8 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.template import loader
 from .models import Location
 from django.urls import reverse
-from .geotools import get_lat_lon
+from .geotools import distance, get_lat_lon
 import itertools
 
 
@@ -34,10 +34,16 @@ def add_location(request):
 
 def details(request, user_name):
     location_list = Location.objects.filter(user_name=user_name).order_by('-created')
+    if len(location_list) < 1:
+        raise Http404("No user with this name in the data base")
+
+    # total_distance = distance(list(map(lambda l: l.lat_lon, location_list)))
+    # print(total_distance)
     template = loader.get_template('whereis/details.html')
 
     context = {
         'user_name': user_name,
         'location_list': location_list,
+        # 'total_distance': total_distance,
     }
     return HttpResponse(template.render(context, request))
