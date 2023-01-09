@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Where is</title>
+</head>
+<body>
+<h1>Add location</h1>
+<form action="{% url 'whereis:add_location' %}" method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+      <label for="user_name">User name:</label>
+      <input type="text" id="user_name" name="user_name" value=""><br><br>
+      <label for="location_name">Location name:</label>
+      <input type="text" id="location_name" name="location_name" value=""><br><br>
+  <input type="submit" value="Add Location">
+</form>
+
+<h1>Recent locations</h1>
+{% if location_list %}
+<ul>
+  {% for location in location_list %}
+  <li>{{ location.user_name }} @ {{ location.location_name }}({{ location.lat_lon }}) : {{ location.created }} </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No Locations in database</p>
+{% endif %}
+</body>
+</html>
