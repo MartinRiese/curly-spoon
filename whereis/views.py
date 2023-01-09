@@ -2,12 +2,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from .models import Location
 from django.urls import reverse
-from .geoname import get_lat_lon
+from .geotools import get_lat_lon
 import itertools
 
 
 def index(request):
-    # TODO only one per person
     location_list = Location.objects.order_by('user_name', '-created')
     template = loader.get_template('whereis/index.html')
 
@@ -31,3 +30,14 @@ def add_location(request):
     l.save()
 
     return HttpResponseRedirect(reverse('whereis:index'))
+
+
+def details(request, user_name):
+    location_list = Location.objects.filter(user_name=user_name).order_by('-created')
+    template = loader.get_template('whereis/details.html')
+
+    context = {
+        'user_name': user_name,
+        'location_list': location_list,
+    }
+    return HttpResponse(template.render(context, request))
