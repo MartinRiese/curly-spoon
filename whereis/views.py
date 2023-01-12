@@ -4,6 +4,7 @@ from .models import Location
 from django.urls import reverse
 from .geotools import distance, get_lat_lon
 import itertools
+from urllib import parse
 
 
 def index(request):
@@ -12,6 +13,11 @@ def index(request):
 
     # TODO: sql lite does not support should be replaced with query
     distinct_location_list = list(map(lambda l: list(l[1])[0], itertools.groupby(location_list, lambda l: l.user_name)))
+
+    for location in distinct_location_list:
+        print(location.user_name)
+        location.user_name = parse.quote_plus(location.user_name)
+        print(location.user_name)
 
     context = {
         'location_list': distinct_location_list,
@@ -33,16 +39,20 @@ def add_location(request):
 
 
 def details(request, user_name):
-    location_list = Location.objects.filter(user_name=user_name).order_by('-created')
+    decoded_user_name = parse.unquote_plus(user_name)
+
+    location_list = Location.objects.filter(user_name=decoded_user_name).order_by('-created')
     if len(location_list) < 1:
         raise Http404("No user with this name in the data base")
 
-    # total_distance = distance(list(map(lambda l: l.lat_lon, location_list)))
+    # lat_lon_s = list(map(lambda l: l.lat_lon, location_list))
+    # print(lat_lon_s)
+    # total_distance = distance(lat_lon_s)
     # print(total_distance)
     template = loader.get_template('whereis/details.html')
 
     context = {
-        'user_name': user_name,
+        'user_name': decoded_user_name,
         'location_list': location_list,
         # 'total_distance': total_distance,
     }
