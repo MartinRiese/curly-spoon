@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+from datetime import datetime
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.template import loader
 from .models import Location
@@ -7,17 +9,26 @@ import itertools
 from urllib import parse
 
 
+@dataclass
+class LocationExt:
+    user_name: str
+    user_name_encoded: str
+    location_name: str
+    lat_lon: str
+    created: datetime
+
+
 def index(request):
     location_list = Location.objects.order_by('user_name', '-created')
     template = loader.get_template('whereis/index.html')
 
     # TODO: sql lite does not support should be replaced with query
     distinct_location_list = list(map(lambda l: list(l[1])[0], itertools.groupby(location_list, lambda l: l.user_name)))
-
-    for location in distinct_location_list:
-        print(location.user_name)
-        location.user_name = parse.quote_plus(location.user_name)
-        print(location.user_name)
+    distinct_location_list = list(map(lambda l: LocationExt(l.user_name, parse.quote_plus(l.user_name), l.location_name, l.lat_lon, l.created), distinct_location_list))
+    # for location in distinct_location_list:
+    #     print(location.user_name)
+    #     location.user_name = parse.quote_plus(location.user_name)
+    #     print(location.user_name)
 
     context = {
         'location_list': distinct_location_list,
