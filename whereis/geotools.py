@@ -17,7 +17,13 @@ def distance(locations: list):
     if len(locations) < 2:
         return 0
     else:
-        return functools.reduce(lambda l1, l2: hs.haversine(_to(l1), _to(l2), unit=hs.Unit.KILOMETERS), locations)
+        total_distance = 0
+        previous_location = locations[0]
+        for location in locations[1:]:
+            total_distance += hs.haversine(_to(previous_location), _to(location))
+            print(total_distance)
+            previous_location = location
+        return total_distance
 
 
 def _to(lat_lon: str):

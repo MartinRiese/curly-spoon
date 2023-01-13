@@ -45,15 +45,13 @@ def details(request, user_name):
     if len(location_list) < 1:
         raise Http404("No user with this name in the data base")
 
-    # lat_lon_s = list(map(lambda l: l.lat_lon, location_list))
-    # print(lat_lon_s)
-    # total_distance = distance(lat_lon_s)
-    # print(total_distance)
+    lat_lon_s = list(map(lambda l: l.lat_lon, location_list))
+    total_distance = distance(lat_lon_s)
     template = loader.get_template('whereis/details.html')
 
     context = {
         'user_name': decoded_user_name,
         'location_list': location_list,
-        # 'total_distance': total_distance,
+        'total_distance': total_distance,
     }
     return HttpResponse(template.render(context, request))
